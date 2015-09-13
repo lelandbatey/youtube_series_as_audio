@@ -1,13 +1,27 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+
+# Copyright (C) 2015  Leland Batey
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+# 
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 from __future__ import print_function
 import subprocess
 import argparse
 import os.path
-import sys
-import os
 
-BASEURL = "http://nacr.us/media/video/game_grumps/"
+BASEURL = "ROOT_PATH_HERE"
 
 def run_command(cmd):
     """Runs a given command in a shell."""
@@ -135,7 +149,7 @@ def transcode_source_to_new_audio(series_alias, audio_fmt='mp3'):
         return cmd
 
     def aac_copy(value, series_alias):
-        cmd = 'mv "./{series_alias}/video/{source_file}" '+\
+        cmd = 'cp "./{series_alias}/video/{source_file}" '+\
         '"./{series_alias}/audio/{source_file}"'
         cmd = cmd.format(source_file=value, series_alias=series_alias)
         return cmd
@@ -196,8 +210,8 @@ def main():
     parser = argparse.ArgumentParser(description='Create an audiobook/podcast from a YouTube series')
     parser.add_argument('--alias', required=True, help='a "shortname" for the YouTube series. Used as name of folder for storing audio for this series.')
     parser.add_argument('--url', help='the URL to the YouTube playlist with all videos in desired series.')
-    parser.add_argument('--print', help='attempt to generate markdown summary for an existing series.')
-    parser.add_argument('--format', help='the output audio format. Either "mp3" or "m4a". Default is "mp3"', default='mp3')
+    parser.add_argument('--print', help='attempt to generate markdown summary for an existing series.', action='store_true')
+    parser.add_argument('--format', help='the output audio format. Either "mp3" or "m4a". Default is "mp3"', default='mp3', choices=['mp3', 'm4a'])
     args = parser.parse_args()
 
     if args.alias:
@@ -206,7 +220,7 @@ def main():
         series_url = args.url
 
     if args.print and series_alias:
-        build_markdown(series_alias)
+        print(build_markdown(series_alias, audio_format=args.format))
         return
 
     if not (series_alias and series_url):
